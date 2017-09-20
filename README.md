@@ -19,7 +19,8 @@ import EPToolkit from 'escpos-printer-toolkit';
 let options = {
   beep: true, 
   cut: true, 
-  tailingLine: true
+  tailingLine: true,
+  encoding: 'GBK'
 }
 EPToolkit.exchange_text("<C>这是一段打印测试文字</C>", options)
 
