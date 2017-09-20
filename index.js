@@ -1,9 +1,9 @@
 const BufferHelper  = require("bufferhelper");
-const fs = require('fs');
-const Jimp = require("jimp");
-const request = require('request');
+// const fs = require('fs');
+// const Jimp = require("jimp");
+// const request = require('request');
 const iconv = require("iconv-lite");
-const Deasync = require("deasync");
+// const Deasync = require("deasync");
 
 var exchange_text_with_times = exports.exchange_text_with_times = function exchange_text_with_times(text, times, options){
     times = (times === undefined ? 1 : times);
@@ -246,66 +246,63 @@ var exchange_text = exports.exchange_text = function exchange_text(text, options
 }
 
 var change_image_url_to_bytes = exports.change_image_url_to_bytes = function change_image_url_to_bytes(url){
-    var buffer = new Buffer(0);
-    // var qrcode_path = process.cwd() + "\\qrcode";
-    // if(!fs.existsSync(qrcode_path)){
-    //   fs.mkdirSync(qrcode_path)
-    // }
-    // var image_path = qrcode_path + "\\img_" + new Date().getTime() + ".jpg";
-    var sync = true;
-    Jimp.read(url, function (err, img) {
-        if(err) {
-            console.error(err.message)
-        }else{
-            img.resize(250, 250).quality(60).greyscale();
-            buffer = exchange_image(img, 130);
-        }
-        sync = false
-    });
-    while(sync){ Deasync.sleep(100)}
+    var buffer = new Buffer(iconv.encode(url, 'GBK'));
+
+    // var buffer = new Buffer(0);
+    // var sync = true;
+    // Jimp.read(url, function (err, img) {
+    //     if(err) {
+    //         console.error(err.message)
+    //     }else{
+    //         img.resize(250, 250).quality(60).greyscale();
+    //         buffer = exchange_image(img, 130);
+    //     }
+    //     sync = false
+    // });
+    // while(sync){ Deasync.sleep(100)}
     return buffer;
 }
 
-var download_image = exports.download_image = function download_image(url, path){
-    try{
-        request(url).pipe(fs.createWriteStream(path));
-        return true
-    }catch(e){
-        return false
-    }
-}
+// var download_image = exports.download_image = function download_image(url, path){
+//     try{
+//         request(url).pipe(fs.createWriteStream(path));
+//         return true
+//     }catch(e){
+//         return false
+//     }
+// }
 
-var exchange_image = exports.exchange_image = function exchange_image(img, threshold){
-    var hex;
-    var nl = img.bitmap.width % 256;
-    var nh = parseInt(img.bitmap.width / 256);
-    var bytes = new BufferHelper();
-    // data
-    var data = new Buffer([0, 0, 0]);
-    var line = new Buffer([10]);
-    for (var i = 0; i < parseInt(img.bitmap.height / 24) + 1; i++)
-    {
-        // ESC * m nL nH 点阵图
-        var header = new Buffer([27, 42, 33, nl, nh]);
-        bytes.concat(header);
-        for (var j = 0; j < img.bitmap.width; j++)
-        {
-            data[0] = data[1] = data[2] = 0; // Clear to Zero.
-            for (var k = 0; k < 24; k++)
-            {
-                if (((i * 24) + k) < img.bitmap.height)   // if within the BMP size
-                {
-                    hex = img.getPixelColor(j, (i * 24) + k);
-                    if (Jimp.intToRGBA(hex).r <= threshold)
-                    {
-                        data[parseInt(k / 8)] += (128 >> (k % 8));
-                    }
-                }
-            }
-            var dit = new Buffer([data[0], data[1], data[2]])
-            bytes.concat(dit);
-        }
-        bytes.concat(line);
-    } // data
-    return bytes.toBuffer();
-}
+// var exchange_image = exports.exchange_image = function exchange_image(img, threshold){
+//     var hex;
+//     var nl = img.bitmap.width % 256;
+//     var nh = parseInt(img.bitmap.width / 256);
+//     var bytes = new BufferHelper();
+//     // data
+//     var data = new Buffer([0, 0, 0]);
+//     var line = new Buffer([10]);
+//     for (var i = 0; i < parseInt(img.bitmap.height / 24) + 1; i++)
+//     {
+//         // ESC * m nL nH 点阵图
+//         var header = new Buffer([27, 42, 33, nl, nh]);
+//         bytes.concat(header);
+//         for (var j = 0; j < img.bitmap.width; j++)
+//         {
+//             data[0] = data[1] = data[2] = 0; // Clear to Zero.
+//             for (var k = 0; k < 24; k++)
+//             {
+//                 if (((i * 24) + k) < img.bitmap.height)   // if within the BMP size
+//                 {
+//                     hex = img.getPixelColor(j, (i * 24) + k);
+//                     if (Jimp.intToRGBA(hex).r <= threshold)
+//                     {
+//                         data[parseInt(k / 8)] += (128 >> (k % 8));
+//                     }
+//                 }
+//             }
+//             var dit = new Buffer([data[0], data[1], data[2]])
+//             bytes.concat(dit);
+//         }
+//         bytes.concat(line);
+//     } // data
+//     return bytes.toBuffer();
+// }

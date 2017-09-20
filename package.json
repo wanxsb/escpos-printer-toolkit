@@ -1,6 +1,6 @@
 {
   "name": "escpos-printer-toolkit",
-  "version": "1.0.1",
+  "version": "1.0.4",
   "description": "点单宝打印机指令定义",
   "main": "index.js",
   "scripts": {
@@ -22,10 +22,6 @@
   "homepage": "https://github.com/wanxsb/escpos-printer-toolkit#readme",
   "dependencies": {
     "bufferhelper": "^0.2.1",
-    "deasync": "^0.1.10",
-    "fs": "0.0.1-security",
-    "iconv-lite": "^0.4.19",
-    "jimp": "^0.2.28",
-    "request": "^2.82.0"
+    "iconv-lite": "^0.4.19"
   }
 }
