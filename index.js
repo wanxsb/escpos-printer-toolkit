@@ -5,26 +5,21 @@ const request = require('request');
 const iconv = require("iconv-lite");
 const Deasync = require("deasync");
 
-var exchange_text_with_times = exports.exchange_text_with_times = function exchange_text_with_times(text, times, beep){
+var exchange_text_with_times = exports.exchange_text_with_times = function exchange_text_with_times(text, times, options){
     times = (times === undefined ? 1 : times);
     var bytes = new BufferHelper();
-    var text_buffer = exchange_text(text, beep)
+    var text_buffer = exchange_text(text, options)
     for(var i=0;i<times;i++){
         bytes.concat(text_buffer);
     }
     return bytes.toBuffer()
 }
 
-var exchange_text = exports.exchange_text = function exchange_text(text, beep, options){
+var exchange_text = exports.exchange_text = function exchange_text(text, options){
     options = options || {
         beep: false,
         cut: true,
         tailingLine: true
-    }
-
-    if (typeof beep == 'object')){
-        options = beep
-        beep = false
     }
 
     var encoding = "GBK"
@@ -244,7 +239,7 @@ var exchange_text = exports.exchange_text = function exchange_text(text, beep, o
     if (options.cut){
         bytes.concat(cut_bytes);
     }
-    if (beep){
+    if (options.beep){
         bytes.concat(beep_bytes)
     }
     return bytes.toBuffer();
