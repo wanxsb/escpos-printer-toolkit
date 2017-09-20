@@ -1,9 +1,10 @@
-const BufferHelper  = require("bufferhelper");
+const BufferHelper  = require("./buffer-helper");
 // const fs = require('fs');
 // const Jimp = require("jimp");
 // const request = require('request');
 const iconv = require("iconv-lite");
 // const Deasync = require("deasync");
+const Buffer = require('buffer').Buffer
 
 var exchange_text_with_times = exports.exchange_text_with_times = function exchange_text_with_times(text, times, options){
     times = (times === undefined ? 1 : times);
@@ -19,10 +20,9 @@ var exchange_text = exports.exchange_text = function exchange_text(text, options
     options = options || {
         beep: false,
         cut: true,
-        tailingLine: true
+        tailingLine: true,
+        encoding: 'UTF8',
     }
-
-    var encoding = "GBK"
     // 初始化打印机
     var init_printer_bytes = new Buffer([27, 64]);
     // 读取设备状态
@@ -104,7 +104,7 @@ var exchange_text = exports.exchange_text = function exchange_text(text, options
         var index;
         if (ch == '<')
         {
-            bytes.concat(iconv.encode(temp, encoding));
+            bytes.concat(iconv.encode(temp, options.encoding));
             temp = "";
             if (text.substring(i, i+3) == "<M>")
             {
@@ -219,7 +219,7 @@ var exchange_text = exports.exchange_text = function exchange_text(text, options
         }
         else if(ch == "\n"){
             temp = temp + ch;
-            bytes.concat(iconv.encode(temp, encoding));
+            bytes.concat(iconv.encode(temp, options.encoding));
             bytes.concat(reset_bytes);
             temp = "";
         }
@@ -230,7 +230,7 @@ var exchange_text = exports.exchange_text = function exchange_text(text, options
     }
     if (temp.length > 0)
     {
-        bytes.concat(iconv.encode(temp, encoding));
+        bytes.concat(iconv.encode(temp, options.encoding));
     }
     var line_bytes = new　Buffer([10, 10, 10, 10, 10])
     if (options.tailingLine){
@@ -245,8 +245,11 @@ var exchange_text = exports.exchange_text = function exchange_text(text, options
     return bytes.toBuffer();
 }
 
-var change_image_url_to_bytes = exports.change_image_url_to_bytes = function change_image_url_to_bytes(url){
-    var buffer = new Buffer(iconv.encode(url, 'GBK'));
+var change_image_url_to_bytes = exports.change_image_url_to_bytes = function change_image_url_to_bytes(url, options){
+    options = options||{
+        encoding: 'UTF8'
+    };
+    var buffer = new Buffer(iconv.encode(url, options.encoding));
 
     // var buffer = new Buffer(0);
     // var sync = true;
